@@ -1,6 +1,9 @@
 #ifndef LISTA_PROCESOS_H
 #define LISTA_PROCESOS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef enum estado{
 	p_new,
     ready,
@@ -15,7 +18,9 @@ typedef struct proceso
     unsigned int burstTime;
 	unsigned int currentBT;
     unsigned int waitingTime;
+    unsigned int turnaroundTime;  // Añadido para cálculos más precisos
 	unsigned int blockSize;
+    unsigned int arrivalTime;     // Añadido para manejar tiempos de llegada
 }proceso_t;
 
 typedef struct nodo
@@ -50,31 +55,28 @@ void rm(unsigned int id, nodo_p_t** head)
 		printf("ERROR: lista de procesos vacio.\n");
 		return;
 	}
-	else if((*head)->proc.id==id) //el que se desea eliminar es el
-	{//head
-		aux=(nodo_p_t*)malloc(sizeof(nodo_p_t));
+	else if((*head)->proc.id==id) //el que se desea eliminar es el head
+	{
 		aux=(*head)->sig;
 		free((*head));
 		(*head)=aux;	
 	}
 	else
 	{
-		if((*head)->sig==NULL)//solamente existe head, y no es lo que se
-		{//busca eliminar
-			printf("ERROR: no existe proceso con ID.\n");
+		if((*head)->sig==NULL)//solamente existe head, y no es lo que se busca eliminar
+		{
+			printf("ERROR: no existe proceso con ID %d.\n", id);
 			return;
 		}		
 		nodo_p_t* new_next=NULL;
-		aux=(nodo_p_t*)malloc(sizeof(nodo_p_t));
 		aux=(*head);
-		while(aux->sig->proc.id!=id)//buscar el proceso con el id
+		while(aux->sig != NULL && aux->sig->proc.id!=id)//buscar el proceso con el id
 		{
-			if(aux->sig->sig==NULL)
-			{//ya no se encontro
-				printf("ERROR: no existe proceso con ID.\n");
-				return;
-			}
 			aux=aux->sig;
+		}
+		if(aux->sig == NULL) {
+			printf("ERROR: no existe proceso con ID %d.\n", id);
+			return;
 		}
 		new_next=aux->sig->sig;
 		free(aux->sig);	
@@ -82,19 +84,19 @@ void rm(unsigned int id, nodo_p_t** head)
 	}
 }
 
-void show_proc(proceso_t proc)//mostrar un animigo
+void show_proc(proceso_t proc)//mostrar un proceso
 {
 	printf("PID: %d\n",proc.id);
 	printf("Burst Time: %d\n",proc.burstTime);
-	//no muestra currentBT porque eso es solamente para cuando se manejan algoritmos de calenderizacion
-	//preemtive
+	printf("Block Size: %d\n",proc.blockSize);
+	
 	switch(proc.estado)
     {
 		case p_new:
 			printf("Estado: New\n");
 			break;
         case ready:
-            printf("Estado: Ready\n");
+            printf("Estado: Ready (En Memoria)\n");
             break;
         case running:
             printf("Estado: Running\n");
@@ -104,10 +106,10 @@ void show_proc(proceso_t proc)//mostrar un animigo
             break;
     }
 	printf("Waiting Time: %d\n",proc.waitingTime); 
-	printf("Block Size: %d\n",proc.blockSize);
+	printf("Turnaround Time: %d\n",proc.turnaroundTime);
 }
 
-void show_all(nodo_p_t* head)//mostrar todos los animigos en la lista
+void show_all(nodo_p_t* head)//mostrar todos los procesos en la lista
 {
 	nodo_p_t* aux=NULL;
 	if(head==NULL) //esta vacia la lista
@@ -117,7 +119,7 @@ void show_all(nodo_p_t* head)//mostrar todos los animigos en la lista
 	}
 	else
 	{	
-			printf("----------Los Procesos-----------\n");	
+		printf("----------Los Procesos-----------\n");	
 		aux=head;
 		while(aux!=NULL)
 		{	
@@ -130,8 +132,18 @@ void show_all(nodo_p_t* head)//mostrar todos los animigos en la lista
 
 unsigned int buscar_id_disponible(nodo_p_t* head)
 {	
-	if(head==NULL)return 1;
-	else return head->proc.id+1;	
+	if(head==NULL) return 1;
+	
+	// Buscar el ID más alto y sumar 1
+	unsigned int max_id = 0;
+	nodo_p_t* aux = head;
+	while(aux != NULL) {
+		if(aux->proc.id > max_id) {
+			max_id = aux->proc.id;
+		}
+		aux = aux->sig;
+	}
+	return max_id + 1;
 }
 
 void elimina_procesos(nodo_p_t* head)
@@ -157,7 +169,10 @@ void calcularDatos(nodo_p_t* head)
     while(aux!=NULL)
     {
         waitTime = aux->proc.waitingTime;
-        turnTime = aux->proc.waitingTime+aux->proc.burstTime;
+        // Calcular turnaround time correctamente
+        turnTime = aux->proc.waitingTime + aux->proc.burstTime;
+        aux->proc.turnaroundTime = turnTime; // Actualizar el campo
+        
         printf("Wait Time de P%d: %d\n",aux->proc.id,waitTime);
         printf("Turnaround Time de P%d: %d\n",aux->proc.id,turnTime);
         waitTimeAcum+=waitTime;
@@ -165,10 +180,13 @@ void calcularDatos(nodo_p_t* head)
         aux=aux->sig;
         i++;
     }
-    waitTimePromedio = waitTimeAcum/i;
-    turnTimePromedio = turnTimeAcum/i;
-    printf("Waiting Time Promedio: %0.2f\n",waitTimePromedio);
-    printf("Turnaround Time Promedio: %0.2f\n",turnTimePromedio);
+    
+    if(i > 0) {
+        waitTimePromedio = (float)waitTimeAcum/i;
+        turnTimePromedio = (float)turnTimeAcum/i;
+        printf("Waiting Time Promedio: %.2f\n",waitTimePromedio);
+        printf("Turnaround Time Promedio: %.2f\n",turnTimePromedio);
+    }
     printf("---------------------------------\n");	
 }
 

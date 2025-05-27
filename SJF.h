@@ -4,7 +4,7 @@
 void realizarSJF(nodo_p_t* head);
 nodo_p_t* ordenar_procesos_SJF(nodo_p_t* head);
 int buscar_BT_max(nodo_p_t* head);
-proceso_t buscar_proceso_max(nodo_p_t* head,int bt_max);
+proceso_t buscar_proceso_max(nodo_p_t* head,int bt_max);  //FALTO
 
 void realizarSJF(nodo_p_t* head)
 {

@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include"lista_procesos.h"
 
-void realizarRR(nodo_p_t* head,int qt);
+void realizarRR(nodo_p_t* head,int qt); //FALTO
 
 void realizarRR(nodo_p_t* head,int qt)
 {

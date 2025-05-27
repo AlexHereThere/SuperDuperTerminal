@@ -38,7 +38,7 @@ void realizarFCFS(nodo_p_t* head)
         }
         else if(nodo_actual->proc.estado == p_new) {
             printf("ADVERTENCIA: Proceso P%d no está cargado en memoria (estado: NEW)\n", 
-                   nodo_actual->proc.id);
+                   nodo_actual->proc.id); //NO SE OCUPA
         }
         
         nodo_actual = nodo_actual->sig;

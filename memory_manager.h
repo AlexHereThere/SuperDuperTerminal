@@ -47,7 +47,7 @@ void actualizar_memoria_fisica();
 
 // Implementación de funciones
 
-void inicializar_memoria() {
+void inicializar_memoria() {//bien
     // Limpiar memoria física
     for(int i = 0; i < MEMORY_SIZE; i++) {
         memoria[i] = BLOCK_FREE;
@@ -64,7 +64,7 @@ void inicializar_memoria() {
     printf("Memoria inicializada con %d bloques.\n", MEMORY_SIZE);
 }
 
-int alloc_proceso(unsigned int proceso_id, unsigned int tamaño, estrategia_t estrategia, nodo_p_t** head) {
+int alloc_proceso(unsigned int proceso_id, unsigned int tamaño, estrategia_t estrategia, nodo_p_t** head) { //parece bien
     // Buscar el proceso en la lista
     nodo_p_t* proceso = buscar_proceso_por_id(*head, proceso_id);
     if(proceso == NULL) {
@@ -125,7 +125,7 @@ int alloc_proceso(unsigned int proceso_id, unsigned int tamaño, estrategia_t es
     return 1;
 }
 
-int free_proceso(unsigned int proceso_id, nodo_p_t** head) {
+int free_proceso(unsigned int proceso_id, nodo_p_t** head) { //bien/medio
     // Buscar el proceso en la lista
     nodo_p_t* proceso = buscar_proceso_por_id(*head, proceso_id);
     if(proceso == NULL) {
@@ -147,7 +147,7 @@ int free_proceso(unsigned int proceso_id, nodo_p_t** head) {
             }
             
             // Fusionar bloques libres adyacentes
-            fusionar_bloques_libres();
+            fusionar_bloques_libres(); //quitar creo?
             
             // Actualizar memoria física
             actualizar_memoria_fisica();
@@ -162,7 +162,7 @@ int free_proceso(unsigned int proceso_id, nodo_p_t** head) {
     return 0;
 }
 
-bloque_memoria_t* encontrar_bloque_libre(unsigned int tamaño, estrategia_t estrategia) {
+bloque_memoria_t* encontrar_bloque_libre(unsigned int tamaño, estrategia_t estrategia) {//bien
     bloque_memoria_t* mejor_bloque = NULL;
     bloque_memoria_t* actual = memoria_head;
     
@@ -202,7 +202,7 @@ bloque_memoria_t* encontrar_bloque_libre(unsigned int tamaño, estrategia_t estr
     return mejor_bloque;
 }
 
-void insertar_bloque(unsigned int inicio, unsigned int tamaño, unsigned int proceso_id, int ocupado) {
+void insertar_bloque(unsigned int inicio, unsigned int tamaño, unsigned int proceso_id, int ocupado) {//bien
     bloque_memoria_t* nuevo_bloque = (bloque_memoria_t*)malloc(sizeof(bloque_memoria_t));
     nuevo_bloque->inicio = inicio;
     nuevo_bloque->tamaño = tamaño;
@@ -222,11 +222,11 @@ void insertar_bloque(unsigned int inicio, unsigned int tamaño, unsigned int pro
         actual = actual->sig;
     }
     
-    nuevo_bloque->sig = actual->sig;
+    nuevo_bloque->sig = actual->sig; //El que sigue del nuevo bloque se convierte en NULLO
     actual->sig = nuevo_bloque;
 }
 
-void fusionar_bloques_libres() {
+void fusionar_bloques_libres() { //bien
     bloque_memoria_t* actual = memoria_head;
     
     while(actual != NULL && actual->sig != NULL) {
@@ -244,7 +244,7 @@ void fusionar_bloques_libres() {
     }
 }
 
-void mostrar_memoria_status() {
+void mostrar_memoria_status() {//ocupa cambios
     printf("\n========== ESTADO DE LA MEMORIA ==========\n");
     printf("Tamaño total: %d bloques\n", MEMORY_SIZE);
     printf("\nBloques de memoria:\n");
@@ -281,7 +281,7 @@ void mostrar_memoria_status() {
     printf("==========================================\n\n");
 }
 
-void compactar_memoria(nodo_p_t** head) {
+void compactar_memoria(nodo_p_t** head) {//no se ocupa
     printf("Iniciando compactación de memoria...\n");
     
     // Crear nueva lista de bloques compactada
@@ -333,7 +333,7 @@ void compactar_memoria(nodo_p_t** head) {
         
         // Insertar ordenado por inicio
         if(memoria_head == NULL || memoria_head->inicio > temp->inicio) {
-            temp->sig = memoria_head;
+            temp->sig = memoria_head;//NULO
             memoria_head = temp;
         } else {
             bloque_memoria_t* aux = memoria_head;
@@ -351,7 +351,7 @@ void compactar_memoria(nodo_p_t** head) {
     printf("Compactación completada. %d procesos reubicados.\n", procesos_movidos);
 }
 
-void actualizar_memoria_fisica() {
+void actualizar_memoria_fisica() {//bien supongo
     // Limpiar memoria
     for(int i = 0; i < MEMORY_SIZE; i++) {
         memoria[i] = BLOCK_FREE;
@@ -371,7 +371,7 @@ void actualizar_memoria_fisica() {
     }
 }
 
-nodo_p_t* buscar_proceso_por_id(nodo_p_t* head, unsigned int id) {
+nodo_p_t* buscar_proceso_por_id(nodo_p_t* head, unsigned int id) {//bien
     nodo_p_t* actual = head;
     while(actual != NULL) {
         if(actual->proc.id == id) {
@@ -383,7 +383,7 @@ nodo_p_t* buscar_proceso_por_id(nodo_p_t* head, unsigned int id) {
 }
 
 // Función para convertir string de estrategia a enum
-estrategia_t string_to_estrategia(char* str) {
+estrategia_t string_to_estrategia(char* str) {//ok
     if(strcmp(str, "first") == 0 || strcmp(str, "firstfit") == 0) {
         return FIRST_FIT;
     } else if(strcmp(str, "best") == 0 || strcmp(str, "bestfit") == 0) {
@@ -395,7 +395,7 @@ estrategia_t string_to_estrategia(char* str) {
 }
 
 // Función para liberar toda la memoria al finalizar el programa
-void liberar_memoria_manager() {
+void liberar_memoria_manager() {//bien
     while(memoria_head != NULL) {
         bloque_memoria_t* temp = memoria_head;
         memoria_head = memoria_head->sig;

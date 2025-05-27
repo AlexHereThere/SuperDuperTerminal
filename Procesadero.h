@@ -35,7 +35,7 @@ void manejar_procesos(char* comando,nodo_p_t** head)
         aux = (*head); //resguardar
         realizarFCFS(*head);
         elimina_procesos(aux); //liberar memoria de lista
-        *head = NULL;
+        *head = NULL; //SE NECESITA CAMBIAR ESTO
     } 
     if(strcmp(c_partes[0],"SJF")==0)
     {
@@ -48,7 +48,7 @@ void manejar_procesos(char* comando,nodo_p_t** head)
         aux = (*head);
         realizarSJF(*head);
         elimina_procesos(aux);
-        (*head) = NULL;
+        (*head) = NULL;//SE NECESITA CAMBIAR ESTO
     }
     if(strcmp(c_partes[0],"RR")==0)
     {
@@ -70,7 +70,7 @@ void manejar_procesos(char* comando,nodo_p_t** head)
             (*head) = ordenar_procesos_ID(*head);
             aux = (*head);
             realizarRR(*head,qt);
-            (*head) = NULL;
+            (*head) = NULL;//SE NECESITA CAMBIAR ESTO
         }
         else
         {

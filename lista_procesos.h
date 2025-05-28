@@ -168,17 +168,21 @@ void calcularDatos(nodo_p_t* head)
     printf("----------Los Resultados---------\n");
     while(aux!=NULL)
     {
-        waitTime = aux->proc.waitingTime;
-        // Calcular turnaround time correctamente
-        turnTime = aux->proc.waitingTime + aux->proc.burstTime;
-        aux->proc.turnaroundTime = turnTime; // Actualizar el campo
+		if(aux->proc.estado == running)
+		{
+        	waitTime = aux->proc.waitingTime;
+        	// Calcular turnaround time correctamente
+        	turnTime = aux->proc.waitingTime + aux->proc.burstTime;
+        	aux->proc.turnaroundTime = turnTime; // Actualizar el campo
         
-        printf("Wait Time de P%d: %d\n",aux->proc.id,waitTime);
-        printf("Turnaround Time de P%d: %d\n",aux->proc.id,turnTime);
-        waitTimeAcum+=waitTime;
-        turnTimeAcum+=turnTime;
+        	printf("Wait Time de P%d: %d\n",aux->proc.id,waitTime);
+        	printf("Turnaround Time de P%d: %d\n",aux->proc.id,turnTime);
+        	waitTimeAcum+=waitTime;
+        	turnTimeAcum+=turnTime;
+			aux->proc.estado = terminated;
+			i++;//contar los que fueron corridos.
+		}
         aux=aux->sig;
-        i++;
     }
     
     if(i > 0) {

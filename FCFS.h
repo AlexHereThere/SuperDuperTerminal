@@ -26,7 +26,7 @@ void realizarFCFS(nodo_p_t* head)
                 time);
             
             time += nodo_actual->proc.burstTime;
-            nodo_actual->proc.estado = terminated;
+            nodo_actual->proc.estado = running;
             
             printf("Sale P%d en tiempo %u.\n",
                 nodo_actual->proc.id,
@@ -35,18 +35,14 @@ void realizarFCFS(nodo_p_t* head)
             // Liberar automáticamente la memoria del proceso terminado
             free_proceso(nodo_actual->proc.id, &aux);
             procesos_ejecutados++;
-        }
-        else if(nodo_actual->proc.estado == p_new) {
-            printf("ADVERTENCIA: Proceso P%d no está cargado en memoria (estado: NEW)\n", 
-                   nodo_actual->proc.id); //NO SE OCUPA
-        }
-        
+        }    
         nodo_actual = nodo_actual->sig;
     }
     
     if(procesos_ejecutados == 0) {
         printf("No hay procesos en estado READY para ejecutar.\n");
         printf("Use 'alloc <id> <estrategia>' para cargar procesos en memoria.\n");
+        return;
     } else {
         printf("\nFCFS completado. %d procesos ejecutados.\n", procesos_ejecutados);
     }
@@ -55,10 +51,10 @@ void realizarFCFS(nodo_p_t* head)
     printf("=Enter Para Continuar=");
     getchar();
     calcularDatos(aux);
-    printf("=Enter Para Continuar=");
+    printf("Resultados =Enter Para Continuar=");
     getchar();
     show_all(aux);
-    printf("=Enter Para Continuar=");
+    printf("Estado de Procesos =Enter Para Continuar=");
     getchar();
     system("clear");
 }

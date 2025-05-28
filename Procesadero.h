@@ -12,6 +12,7 @@
 //declaracion
 void manejar_procesos(char* comando, nodo_p_t** head);
 void crear_procesos_csv(nodo_p_t** head, char** c_partes);
+void crear_proceso_manual(nodo_p_t** head, char** c_partes);
 
 void manejar_procesos(char* comando, nodo_p_t** head)
 {
@@ -30,7 +31,27 @@ void manejar_procesos(char* comando, nodo_p_t** head)
 
     // Comandos de gestión de procesos
     if(strcmp(c_partes[0], "creaprocesos") == 0) {
+        int num_partes = arrayLength(c_partes);
+        if(num_partes>2)
+        {
+            printf("Error: Se introdujo parametros de mas.\n");
+            freeArray(c_partes);
+            return;
+        }
         crear_procesos_csv(head, c_partes);
+        freeArray(c_partes);
+        return;
+    }
+
+    if(strcmp(c_partes[0],"creaproceso") == 0) {
+        int num_partes = arrayLength(c_partes);
+        if(num_partes>3)
+        {
+            printf("Error: Se introdujo parametros de mas.\n");
+            freeArray(c_partes);
+            return; 
+        }
+        crear_proceso_manual(head, c_partes);
         freeArray(c_partes);
         return;
     }
@@ -41,13 +62,19 @@ void manejar_procesos(char* comando, nodo_p_t** head)
         return;
     }
     
-    if(strcmp(c_partes[0], "mykill") == 0) {
+    if(strcmp(c_partes[0], "destruir") == 0) {
         int num_partes = arrayLength(c_partes);
         if(num_partes < 2) {
             printf("Error: no se ingreso el ID del proceso a eliminar.\n");
             freeArray(c_partes);
             return;
+        } else if(num_partes > 2)
+        {
+            printf("Error: Se introdujo parametros de mas.\n");
+            freeArray(c_partes);
+            return;
         }
+
         
         char* str_aux;
         unsigned int id_eliminar = strtol(c_partes[1], &str_aux, 10);
@@ -88,11 +115,8 @@ void manejar_procesos(char* comando, nodo_p_t** head)
         (*head) = ordenar_procesos_ID(*head); //FCFS solamente ocupa ordenarlos por ID.
         aux = (*head); //resguardar
         realizarFCFS(*head);
-        elimina_procesos(aux); //liberar memoria de lista
-        *head = NULL;
         freeArray(c_partes);
         return;
-        *head = NULL; //SE NECESITA CAMBIAR ESTO
     } 
     
     if(strcmp(c_partes[0], "SJF") == 0) {
@@ -104,11 +128,8 @@ void manejar_procesos(char* comando, nodo_p_t** head)
         (*head) = ordenar_procesos_SJF(*head); //SJF ordena de una manera particular.
         aux = (*head);
         realizarSJF(*head);
-        elimina_procesos(aux);
-        (*head) = NULL;
         freeArray(c_partes);
         return;
-        (*head) = NULL;//SE NECESITA CAMBIAR ESTO
     }
     
     if(strcmp(c_partes[0], "RR") == 0) {
@@ -118,7 +139,8 @@ void manejar_procesos(char* comando, nodo_p_t** head)
             return;
         }
         num_com = arrayLength(c_partes);
-        if(num_com == 2) { //hay 2 parametros en el comando
+        if(num_com == 2) 
+        { //hay 2 parametros en el comando
             unsigned int qt = strtol(c_partes[1], &str_aux, 10); //se lee un quantum time
             if(qt <= 0) { //se asigno un valor invalido como qt.
                 printf("Error: quantum time invalido.\n");
@@ -129,13 +151,9 @@ void manejar_procesos(char* comando, nodo_p_t** head)
             (*head) = ordenar_procesos_ID(*head);
             aux = (*head);
             realizarRR(*head, qt);
-            (*head) = NULL;
             freeArray(c_partes);
             return;
-        } else {
-            realizarRR(*head,qt);
-            (*head) = NULL;//SE NECESITA CAMBIAR ESTO
-        }
+        } 
         else
         {
             printf("Error: falto quantum time o se agrego un parametro de mas.\n");
@@ -145,11 +163,16 @@ void manejar_procesos(char* comando, nodo_p_t** head)
     }
     
     // Comandos de gestión de memoria
-    if(strcmp(c_partes[0], "myalloc") == 0) {
+    if(strcmp(c_partes[0], "asignar") == 0) {
         int num_partes = arrayLength(c_partes);
         if(num_partes < 3) {
             printf("Error: uso correcto -> myalloc <id> <estrategia>\n");
             printf("Estrategias disponibles: first, best, worst\n");
+            freeArray(c_partes);
+            return;
+        } else if(num_partes > 3)
+        {
+            printf("Error: Se introdujo parametros de mas.\n");
             freeArray(c_partes);
             return;
         }
@@ -189,13 +212,13 @@ void manejar_procesos(char* comando, nodo_p_t** head)
         if(resultado) {
             printf("Memoria asignada correctamente al proceso P%u.\n", proceso_id);
         } else {
-            printf("No se pudo asignar memoria al proceso P%u. Memoria insuficiente o proceso ya en memoria.\n", proceso_id);
+            printf("No se pudo asignar memoria al proceso P%u.\n", proceso_id);
         }
         freeArray(c_partes);
         return;
     }
     
-    if(strcmp(c_partes[0], "myfree") == 0) {
+    if(strcmp(c_partes[0], "soltar") == 0) {
         int num_partes = arrayLength(c_partes);
         if(num_partes < 2) {
             printf("Error: uso correcto -> myfree <id>\n");
@@ -221,15 +244,22 @@ void manejar_procesos(char* comando, nodo_p_t** head)
         return;
     }
     
-    if(strcmp(c_partes[0], "mystatus") == 0) {
+    if(strcmp(c_partes[0], "memestado") == 0) {
         mostrar_memoria_status();
         freeArray(c_partes);
         return;
     }
     
-    if(strcmp(c_partes[0], "mycompact") == 0) {
-        compactar_memoria(head);
+    if(strcmp(c_partes[0], "compactar") == 0) {
+        compactar_bloques_libres();
         printf("Memoria compactada exitosamente.\n");
+        freeArray(c_partes);
+        return;
+    }
+
+    if(strcmp(c_partes[0], "desfrag")==0) {
+        desfragmentar_memoria(head);
+        printf("La Memoria se desfragmento exitosamente.\n");
         freeArray(c_partes);
         return;
     }
@@ -293,7 +323,7 @@ void crear_procesos_csv(nodo_p_t** head, char** c_partes)
         new_proceso.blockSize = bz_value;
         new_proceso.estado = p_new;
         new_proceso.waitingTime = 0;
-        
+        new_proceso.turnaroundTime = 0;
         in(new_proceso, head);
         procesos_creados++;
         
@@ -302,4 +332,42 @@ void crear_procesos_csv(nodo_p_t** head, char** c_partes)
     
     fclose(file);
     printf("Procesos del CSV cargados exitosamente. Se crearon %d procesos.\n", procesos_creados);
+}
+
+void crear_proceso_manual(nodo_p_t** head, char** c_partes)
+{
+    int num_partes = arrayLength(c_partes);
+
+    if(num_partes<2)
+    {
+        printf("Error: no se ingreso burst time y block size.\n");
+        return;
+    }else if(num_partes<3)
+    {
+        printf("Error: no se ingreso block size.\n");
+        return;
+    }
+    char* aux;
+    unsigned int bt_value = strtol(c_partes[1], &aux, 10);
+    if(bt_value <= 0) {
+        printf("Error: burst time inválido.\n");
+        return;
+    }
+    unsigned int bz_value = strtol(c_partes[2], &aux, 10);
+    if(bz_value <= 0) {
+        printf("Error: block size inválido.\n");
+        return;
+    }
+
+    proceso_t new_proceso;
+    new_proceso.id = buscar_id_disponible(*head);
+    new_proceso.burstTime = bt_value;
+    new_proceso.currentBT = bt_value;
+    new_proceso.blockSize = bz_value;
+    new_proceso.estado = p_new;
+    new_proceso.waitingTime = 0;
+    new_proceso.turnaroundTime = 0;
+    in(new_proceso, head);
+
+    printf("Proceso cargado exitosamente.\n");
 }

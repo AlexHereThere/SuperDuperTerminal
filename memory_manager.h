@@ -6,7 +6,7 @@
 #include <string.h>
 #include "lista_procesos.h"
 
-#define MEMORY_SIZE 1024  // Tamaño total de memoria en bloques
+#define MEMORY_SIZE 100  // Tamaño total de memoria en bloques
 #define BLOCK_FREE 0      // Bloque libre
 #define BLOCK_OCCUPIED 1  // Bloque ocupado
 
@@ -35,13 +35,13 @@ void inicializar_memoria();
 int alloc_proceso(unsigned int proceso_id, unsigned int tamaño, estrategia_t estrategia, nodo_p_t** head);
 int free_proceso(unsigned int proceso_id, nodo_p_t** head);
 void mostrar_memoria_status();
-void compactar_memoria(nodo_p_t** head);
+void desfragmentar__memoria(nodo_p_t** head);
 
 // Funciones auxiliares
 bloque_memoria_t* encontrar_bloque_libre(unsigned int tamaño, estrategia_t estrategia);
 void insertar_bloque(unsigned int inicio, unsigned int tamaño, unsigned int proceso_id, int ocupado);
 void eliminar_bloque(bloque_memoria_t* bloque);
-void fusionar_bloques_libres();
+void compactar_bloques_libres();
 nodo_p_t* buscar_proceso_por_id(nodo_p_t* head, unsigned int id);
 void actualizar_memoria_fisica();
 
@@ -147,7 +147,7 @@ int free_proceso(unsigned int proceso_id, nodo_p_t** head) { //bien/medio
             }
             
             // Fusionar bloques libres adyacentes
-            fusionar_bloques_libres(); //quitar creo?
+            //fusionar_bloques_libres(); //quitar creo?
             
             // Actualizar memoria física
             actualizar_memoria_fisica();
@@ -226,7 +226,7 @@ void insertar_bloque(unsigned int inicio, unsigned int tamaño, unsigned int pro
     actual->sig = nuevo_bloque;
 }
 
-void fusionar_bloques_libres() { //bien
+void compactar_bloques_libres() { //bien
     bloque_memoria_t* actual = memoria_head;
     
     while(actual != NULL && actual->sig != NULL) {
@@ -281,8 +281,8 @@ void mostrar_memoria_status() {//ocupa cambios
     printf("==========================================\n\n");
 }
 
-void compactar_memoria(nodo_p_t** head) {//no se ocupa
-    printf("Iniciando compactación de memoria...\n");
+void desfragmentar_memoria(nodo_p_t** head) {//no se ocupa
+    printf("Iniciando desfragmentacion de memoria...\n");
     
     // Crear nueva lista de bloques compactada
     bloque_memoria_t* nueva_lista = NULL;
@@ -348,7 +348,7 @@ void compactar_memoria(nodo_p_t** head) {//no se ocupa
     // Actualizar memoria física
     actualizar_memoria_fisica();
     
-    printf("Compactación completada. %d procesos reubicados.\n", procesos_movidos);
+    printf("desfragmentacion terminada. %d procesos reubicados.\n", procesos_movidos);
 }
 
 void actualizar_memoria_fisica() {//bien supongo

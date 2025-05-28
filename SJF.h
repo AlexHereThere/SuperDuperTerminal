@@ -4,36 +4,57 @@
 void realizarSJF(nodo_p_t* head);
 nodo_p_t* ordenar_procesos_SJF(nodo_p_t* head);
 int buscar_BT_max(nodo_p_t* head);
-proceso_t buscar_proceso_max(nodo_p_t* head,int bt_max);  //FALTO
+proceso_t buscar_proceso_max(nodo_p_t* head,int bt_max); 
 
 void realizarSJF(nodo_p_t* head)
 {
     nodo_p_t* nodo_actual = head;
     nodo_p_t* aux = head; //para no perder la cabeza original
-    unsigned int time=0;
+    unsigned int time = 0;
+    int procesos_ejecutados = 0;
+
+    printf("\n========== EJECUTANDO SJF ==========\n");
+
     while(nodo_actual!=NULL) //hasta que se acaben los procesos
     {
-        nodo_actual->proc.waitingTime = time; //actualizar waiting time de proceso actual
-        printf("Entra P%d con BT-%d en tiempo %u.\n",
-            nodo_actual->proc.id,
-            nodo_actual->proc.burstTime,
-            time);
-        time+=nodo_actual->proc.burstTime;
-        nodo_actual->proc.estado=terminated;
-        printf("Sale P%d en tiempo %u.\n",
-            nodo_actual->proc.id,
-            time);
+         // Solo ejecutar procesos que están en estado ready (cargados en memoria)
+        if(nodo_actual->proc.estado == ready) 
+        {
+            nodo_actual->proc.waitingTime = time; //actualizar waiting time de proceso actual
+            printf("Entra P%d con BT-%d en tiempo %u.\n",
+                nodo_actual->proc.id,
+                nodo_actual->proc.burstTime,
+                time);
+            time+=nodo_actual->proc.burstTime;
+            nodo_actual->proc.estado=running;
+            printf("Sale P%d en tiempo %u.\n",
+                nodo_actual->proc.id,
+                time);
+            // Liberar automáticamente la memoria del proceso terminado
+            free_proceso(nodo_actual->proc.id, &aux);
+            procesos_ejecutados++;
+        }
         nodo_actual=nodo_actual->sig;
     }
+
+    if(procesos_ejecutados == 0) {
+        printf("No hay procesos en estado READY para ejecutar.\n");
+        printf("Use 'alloc <id> <estrategia>' para cargar procesos en memoria.\n");
+        return;
+    } else {
+        printf("\nSJF completado. %d procesos ejecutados.\n", procesos_ejecutados);
+    }
+
     aux = ordenar_procesos_ID(aux);
     nodo_p_t* aux2 = aux;
+    printf("=====================================\n");
     printf("=Enter Para Continuar=");
     getchar();
     calcularDatos(aux);
-    printf("=Enter Para Continuar=");
+    printf("Resultados =Enter Para Continuar=");
     getchar();
     show_all(aux2);
-    printf("=Enter Para Continuar=");
+    printf("Estado de Procesos =Enter Para Continuar=");
     getchar();
     system("clear");
 }

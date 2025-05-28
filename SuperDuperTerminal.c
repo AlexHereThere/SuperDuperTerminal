@@ -9,23 +9,26 @@ int es_com_ter=0;
 void mostrar_ayuda() {
     printf("\n========== COMANDOS DISPONIBLES ==========\n");
     printf("GESTIÓN DE PROCESOS:\n");
+    printf("  creaproceso <burstTime> <bloques>      - Crea un proceso nuevo\n");
     printf("  creaprocesos <archivo.csv>             - Crear procesos desde CSV\n");
     printf("  listaprocesos                          - Listar todos los procesos\n");
-    printf("  mykill <id>                            - Eliminar proceso\n");
+    printf("  destruir <id>                            - Eliminar proceso\n");
     printf("\nGESTIÓN DE MEMORIA:\n");
-    printf("  myalloc <id> <estrategia>              - Asignar memoria a proceso\n");
+    printf("  asignar <id> <estrategia>              - Asignar memoria a proceso\n");
     printf("    Estrategias: first, best, worst\n");
-    printf("  myfree <id>                            - Liberar memoria de proceso\n");
-    printf("  mystatus                               - Ver estado de memoria\n");
-    printf("  mycompact                              - Compactar memoria\n");
+    printf("  soltar <id>                            - Liberar memoria de proceso\n");
+    printf("  memestado                               - Ver estado de memoria\n");
+    printf("  compactar                              - Compactar memoria\n");
+    printf("  desfrag                               - Desfragmentar memoria\n");
     printf("\nALGORITMOS DE SCHEDULING:\n");
     printf("  FCFS                                   - First Come First Served\n");
     printf("  SJF                                    - Shortest Job First\n");
     printf("  RR <quantum>                           - Round Robin\n");
     printf("\nOTROS:\n");
-    printf("  help                                   - Mostrar esta ayuda\n");
-    printf("  exit                                   - Salir del programa\n");
-    printf("==========================================\n\n");
+    printf("  ayuda                                   - Mostrar esta ayuda\n");
+    printf("  salir                                  - Salir del programa\n");
+    printf("==========================================\n");
+    printf("Tambien es posible realizar comandos de bash!\n\n");
 }
 
 int main()
@@ -41,14 +44,14 @@ int main()
     printf("  Sistema Operativo con Gestión de Memoria\n");
     printf("========================================\n");
     printf("Memoria inicializada con %d bloques.\n", MEMORY_SIZE);
-    printf("Escriba 'help' para ver comandos disponibles.\n\n");
+    printf("Escriba 'ayuda' para ver comandos disponibles.\n\n");
     
     while(1)
     {
         printf("SuperDuperTerminal> ");
         comandos = leer_cadena();
 
-        if (strcmp(comandos, "exit") == 0) {
+        if (strcmp(comandos, "salir") == 0) {
             printf("Liberando recursos...\n");
             // Liberar memoria de procesos
             if(head != NULL) {
@@ -60,7 +63,7 @@ int main()
             break;//salir
         }
         
-        if (strcmp(comandos, "help") == 0) {
+        if (strcmp(comandos, "ayuda") == 0) {
             mostrar_ayuda();
             free(comandos);
             continue;
